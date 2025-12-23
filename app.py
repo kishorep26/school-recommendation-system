@@ -15,6 +15,7 @@ CORS(app)
 
 # Load models and data
 print("Loading models...")
+models_loaded = False
 try:
     knn_model = joblib.load('models/knn_model.pkl')
     rf_model = joblib.load('models/rf_model.pkl')
@@ -25,17 +26,52 @@ try:
     school_raw_data = joblib.load('models/school_raw_data.pkl')
     school_data_scaled = joblib.load('models/school_data_scaled.pkl')
     feature_columns = joblib.load('models/feature_columns.pkl')
-    print("Models loaded successfully!")
-    print(f"Loaded {len(school_raw_data)} schools")
+    models_loaded = True
+    print("✓ Models loaded successfully!")
+    print(f"✓ Loaded {len(school_raw_data)} schools")
 except Exception as e:
-    print(f"Error loading models: {e}")
-    print("Please run train_models.py first!")
-    school_raw_data = pd.DataFrame()
+    print(f"✗ Error loading models: {e}")
+    print("Models directory contents:")
+    import os
+    if os.path.exists('models'):
+        print(os.listdir('models'))
+    else:
+        print("models/ directory does not exist!")
+    print("\nAttempting to train models now...")
+    # Try to train models if they don't exist
+    try:
+        import train_models
+        train_models.train_models()
+        # Try loading again
+        knn_model = joblib.load('models/knn_model.pkl')
+        rf_model = joblib.load('models/rf_model.pkl')
+        svm_model = joblib.load('models/svm_model.pkl')
+        scaler = joblib.load('models/scaler.pkl')
+        city_encoder = joblib.load('models/city_encoder.pkl')
+        zipcode_encoder = joblib.load('models/zipcode_encoder.pkl')
+        school_raw_data = joblib.load('models/school_raw_data.pkl')
+        school_data_scaled = joblib.load('models/school_data_scaled.pkl')
+        feature_columns = joblib.load('models/feature_columns.pkl')
+        models_loaded = True
+        print("✓ Models trained and loaded successfully!")
+    except Exception as e2:
+        print(f"✗ Failed to train models: {e2}")
+        school_raw_data = pd.DataFrame()
+        models_loaded = False
 
 @app.route('/')
 def index():
     """Serve the main page"""
     return send_from_directory('static', 'index.html')
+
+@app.route('/health')
+def health():
+    """Health check endpoint"""
+    return jsonify({
+        'status': 'healthy' if models_loaded else 'unhealthy',
+        'models_loaded': models_loaded,
+        'schools_count': len(school_raw_data) if models_loaded else 0
+    })
 
 @app.route('/api/schools', methods=['GET'])
 def get_schools():
