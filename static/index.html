@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phoenix School Recommendation System</title>
+    <meta name="description" content="Find the perfect school in Phoenix using advanced machine learning algorithms">
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-background"></div>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                        <path d="M20 5L35 12.5V27.5L20 35L5 27.5V12.5L20 5Z" fill="url(#gradient1)" />
+                        <path
+                            d="M20 15C21.6569 15 23 13.6569 23 12C23 10.3431 21.6569 9 20 9C18.3431 9 17 10.3431 17 12C17 13.6569 18.3431 15 20 15Z"
+                            fill="white" />
+                        <path d="M20 18L15 25H25L20 18Z" fill="white" />
+                        <defs>
+                            <linearGradient id="gradient1" x1="5" y1="5" x2="35" y2="35">
+                                <stop offset="0%" stop-color="#667eea" />
+                                <stop offset="100%" stop-color="#764ba2" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span>Phoenix Schools</span>
+                </div>
+                <div class="nav-links">
+                    <a href="#search">Search</a>
+                    <a href="#about">About</a>
+                    <a href="#models">Models</a>
+                </div>
+            </nav>
+
+            <div class="hero-content">
+                <h1 class="hero-title">Find Your Perfect School</h1>
+                <p class="hero-subtitle">Powered by advanced machine learning to match students with their ideal
+                    educational environment</p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" onclick="scrollToSearch()">
+                        <span>Get Started</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M5 10H15M15 10L10 5M15 10L10 15" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                    </button>
+                    <button class="btn btn-secondary" onclick="showDemo()">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2" />
+                            <path d="M8 7L13 10L8 13V7Z" fill="currentColor" />
+                        </svg>
+                        <span>Watch Demo</span>
+                    </button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="total-schools">Loading...</div>
+                        <div class="stat-label">Schools Analyzed</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">3</div>
+                        <div class="stat-label">ML Models</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search Section -->
+    <section id="search" class="search-section">
+        <div class="container">
+            <h2 class="section-title">How Would You Like to Search?</h2>
+
+            <div class="search-mode-selector">
+                <button class="mode-btn active" data-mode="name" onclick="switchMode('name')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span>Search by School Name</span>
+                </button>
+                <button class="mode-btn" data-mode="preferences" onclick="switchMode('preferences')">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path
+                            d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z"
+                            stroke="currentColor" stroke-width="2" />
+                        <path
+                            d="M19.4 15C19.2669 15.3016 19.2272 15.6362 19.286 15.9606C19.3448 16.285 19.4995 16.5843 19.73 16.82L19.79 16.88C19.976 17.0657 20.1235 17.2863 20.2241 17.5291C20.3248 17.7719 20.3766 18.0322 20.3766 18.295C20.3766 18.5578 20.3248 18.8181 20.2241 19.0609C20.1235 19.3037 19.976 19.5243 19.79 19.71C19.6043 19.896 19.3837 20.0435 19.1409 20.1441C18.8981 20.2448 18.6378 20.2966 18.375 20.2966C18.1122 20.2966 17.8519 20.2448 17.6091 20.1441C17.3663 20.0435 17.1457 19.896 16.96 19.71L16.9 19.65C16.6643 19.4195 16.365 19.2648 16.0406 19.206C15.7162 19.1472 15.3816 19.1869 15.08 19.32C14.7842 19.4468 14.532 19.6572 14.3543 19.9255C14.1766 20.1938 14.0813 20.5082 14.08 20.83V21C14.08 21.5304 13.8693 22.0391 13.4942 22.4142C13.1191 22.7893 12.6104 23 12.08 23C11.5496 23 11.0409 22.7893 10.6658 22.4142C10.2907 22.0391 10.08 21.5304 10.08 21V20.91C10.0723 20.579 9.96512 20.258 9.77251 19.9887C9.5799 19.7194 9.31074 19.5143 9 19.4C8.69838 19.2669 8.36381 19.2272 8.03941 19.286C7.71502 19.3448 7.41568 19.4995 7.18 19.73L7.12 19.79C6.93425 19.976 6.71368 20.1235 6.47088 20.2241C6.22808 20.3248 5.96783 20.3766 5.705 20.3766C5.44217 20.3766 5.18192 20.3248 4.93912 20.2241C4.69632 20.1235 4.47575 19.976 4.29 19.79C4.10405 19.6043 3.95653 19.3837 3.85588 19.1409C3.75523 18.8981 3.70343 18.6378 3.70343 18.375C3.70343 18.1122 3.75523 17.8519 3.85588 17.6091C3.95653 17.3663 4.10405 17.1457 4.29 16.96L4.35 16.9C4.58054 16.6643 4.73519 16.365 4.794 16.0406C4.85282 15.7162 4.81312 15.3816 4.68 15.08C4.55324 14.7842 4.34276 14.532 4.07447 14.3543C3.80618 14.1766 3.49179 14.0813 3.17 14.08H3C2.46957 14.08 1.96086 13.8693 1.58579 13.4942C1.21071 13.1191 1 12.6104 1 12.08C1 11.5496 1.21071 11.0409 1.58579 10.6658C1.96086 10.2907 2.46957 10.08 3 10.08H3.09C3.42099 10.0723 3.742 9.96512 4.0113 9.77251C4.28059 9.5799 4.48572 9.31074 4.6 9C4.73312 8.69838 4.77282 8.36381 4.714 8.03941C4.65519 7.71502 4.50054 7.41568 4.27 7.18L4.21 7.12C4.02405 6.93425 3.87653 6.71368 3.77588 6.47088C3.67523 6.22808 3.62343 5.96783 3.62343 5.705C3.62343 5.44217 3.67523 5.18192 3.77588 4.93912C3.87653 4.69632 4.02405 4.47575 4.21 4.29C4.39575 4.10405 4.61632 3.95653 4.85912 3.85588C5.10192 3.75523 5.36217 3.70343 5.625 3.70343C5.88783 3.70343 6.14808 3.75523 6.39088 3.85588C6.63368 3.95653 6.85425 4.10405 7.04 4.29L7.1 4.35C7.33568 4.58054 7.63502 4.73519 7.95941 4.794C8.28381 4.85282 8.61838 4.81312 8.92 4.68H9C9.29577 4.55324 9.54802 4.34276 9.72569 4.07447C9.90337 3.80618 9.99872 3.49179 10 3.17V3C10 2.46957 10.2107 1.96086 10.5858 1.58579C10.9609 1.21071 11.4696 1 12 1C12.5304 1 13.0391 1.21071 13.4142 1.58579C13.7893 1.96086 14 2.46957 14 3V3.09C14.0013 3.41179 14.0966 3.72618 14.2743 3.99447C14.452 4.26276 14.7042 4.47324 15 4.6C15.3016 4.73312 15.6362 4.77282 15.9606 4.714C16.285 4.65519 16.5843 4.50054 16.82 4.27L16.88 4.21C17.0657 4.02405 17.2863 3.87653 17.5291 3.77588C17.7719 3.67523 18.0322 3.62343 18.295 3.62343C18.5578 3.62343 18.8181 3.67523 19.0609 3.77588C19.3037 3.87653 19.5243 4.02405 19.71 4.21C19.896 4.39575 20.0435 4.61632 20.1441 4.85912C20.2448 5.10192 20.2966 5.36217 20.2966 5.625C20.2966 5.88783 20.2448 6.14808 20.1441 6.39088C20.0435 6.63368 19.896 6.85425 19.71 7.04L19.65 7.1C19.4195 7.33568 19.2648 7.63502 19.206 7.95941C19.1472 8.28381 19.1869 8.61838 19.32 8.92V9C19.4468 9.29577 19.6572 9.54802 19.9255 9.72569C20.1938 9.90337 20.5082 9.99872 20.83 10H21C21.5304 10 22.0391 10.2107 22.4142 10.5858C22.7893 10.9609 23 11.4696 23 12C23 12.5304 22.7893 13.0391 22.4142 13.4142C22.0391 13.7893 21.5304 14 21 14H20.91C20.5882 14.0013 20.2738 14.0966 20.0055 14.2743C19.7372 14.452 19.5268 14.7042 19.4 15Z"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+                    </svg>
+                    <span>Search by Preferences</span>
+                </button>
+            </div>
+
+            <!-- Search by Name Form -->
+            <div id="name-search" class="search-form active">
+                <div class="form-card">
+                    <h3>Find Similar Schools</h3>
+                    <p class="form-description">Enter a school name to find similar schools based on characteristics</p>
+
+                    <div class="form-group">
+                        <label for="school-name">School Name</label>
+                        <input type="text" id="school-name" placeholder="Start typing school name..."
+                            list="schools-list">
+                        <datalist id="schools-list"></datalist>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="model-select-name">Recommendation Algorithm</label>
+                        <div class="model-selector">
+                            <div class="model-option" onclick="selectModel('name', 'knn')">
+                                <input type="radio" name="model-name" value="knn" id="knn-name" checked>
+                                <label for="knn-name">
+                                    <div class="model-icon">K-NN</div>
+                                    <div class="model-info">
+                                        <div class="model-name">K-Nearest Neighbors</div>
+                                        <div class="model-desc">Finds schools with similar characteristics</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="model-option" onclick="selectModel('name', 'rf')">
+                                <input type="radio" name="model-name" value="rf" id="rf-name">
+                                <label for="rf-name">
+                                    <div class="model-icon">RF</div>
+                                    <div class="model-info">
+                                        <div class="model-name">Random Forest</div>
+                                        <div class="model-desc">Ensemble learning for diverse results</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="model-option" onclick="selectModel('name', 'svm')">
+                                <input type="radio" name="model-name" value="svm" id="svm-name">
+                                <label for="svm-name">
+                                    <div class="model-icon">SVM</div>
+                                    <div class="model-info">
+                                        <div class="model-name">Support Vector Machine</div>
+                                        <div class="model-desc">Advanced pattern recognition</div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-large" onclick="searchByName()">
+                        <span>Find Similar Schools</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M5 10H15M15 10L10 5M15 10L10 15" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Search by Preferences Form -->
+            <div id="preferences-search" class="search-form">
+                <div class="form-card">
+                    <h3>Describe Your Ideal School</h3>
+                    <p class="form-description">Answer a few questions to find schools that match your preferences</p>
+
+                    <div class="preferences-wizard">
+                        <!-- Location -->
+                        <div class="wizard-section">
+                            <h4>📍 Location</h4>
+                            <div class="form-group">
+                                <label>Search by</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="location-type" value="city" checked
+                                            onchange="toggleLocation()">
+                                        <span>City</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="location-type" value="zipcode"
+                                            onchange="toggleLocation()">
+                                        <span>Zipcode</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="form-group" id="city-group">
+                                <label for="city">City</label>
+                                <select id="city"></select>
+                            </div>
+                            <div class="form-group" id="zipcode-group" style="display:none;">
+                                <label for="zipcode">Zipcode</label>
+                                <select id="zipcode"></select>
+                            </div>
+                        </div>
+
+                        <!-- School Levels -->
+                        <div class="wizard-section">
+                            <h4>🎓 Grade Levels</h4>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="elementary">
+                                    <span>Elementary</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="intermediate">
+                                    <span>Intermediate</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="middle">
+                                    <span>Middle School</span>
+                                </label>
+                                <label class="checkbox-label">
+                                    <input type="checkbox" id="high">
+                                    <span>High School</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Academic Preferences -->
+                        <div class="wizard-section">
+                            <h4>📚 Academic Preferences</h4>
+                            <div class="form-group">
+                                <label for="school-grade">School Grade (1-5)</label>
+                                <input type="range" id="school-grade" min="1" max="5" value="3"
+                                    oninput="updateRangeValue(this)">
+                                <span class="range-value">3</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="proficiency">Proficiency Level</label>
+                                <select id="proficiency">
+                                    <option value="0">Low</option>
+                                    <option value="1" selected>Medium</option>
+                                    <option value="2">High</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="graduation-rate">Graduation Rate (0-10)</label>
+                                <input type="range" id="graduation-rate" min="0" max="10" value="5"
+                                    oninput="updateRangeValue(this)">
+                                <span class="range-value">5</span>
+                            </div>
+                        </div>
+
+                        <!-- Model Selection -->
+                        <div class="wizard-section">
+                            <h4>🤖 Algorithm Selection</h4>
+                            <div class="model-selector">
+                                <div class="model-option" onclick="selectModel('pref', 'knn')">
+                                    <input type="radio" name="model-pref" value="knn" id="knn-pref" checked>
+                                    <label for="knn-pref">
+                                        <div class="model-icon">K-NN</div>
+                                        <div class="model-info">
+                                            <div class="model-name">K-Nearest Neighbors</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="model-option" onclick="selectModel('pref', 'rf')">
+                                    <input type="radio" name="model-pref" value="rf" id="rf-pref">
+                                    <label for="rf-pref">
+                                        <div class="model-icon">RF</div>
+                                        <div class="model-info">
+                                            <div class="model-name">Random Forest</div>
+                                        </div>
+                                    </label>
+                                </div>
+                                <div class="model-option" onclick="selectModel('pref', 'svm')">
+                                    <input type="radio" name="model-pref" value="svm" id="svm-pref">
+                                    <label for="svm-pref">
+                                        <div class="model-icon">SVM</div>
+                                        <div class="model-info">
+                                            <div class="model-name">Support Vector Machine</div>
+                                        </div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary btn-large" onclick="searchByPreferences()">
+                        <span>Find Matching Schools</span>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M5 10H15M15 10L10 5M15 10L10 15" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Results Section -->
+    <section id="results" class="results-section" style="display:none;">
+        <div class="container">
+            <h2 class="section-title">Recommended Schools</h2>
+            <div id="results-container"></div>
+        </div>
+    </section>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading-overlay" style="display:none;">
+        <div class="loading-spinner"></div>
+        <p>Finding the best schools for you...</p>
+    </div>
+
+    <script src="/static/script.js"></script>
+</body>
+
+</html>

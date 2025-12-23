@@ -1,0 +1,14 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+env
+venv
+*.log
+.DS_Store
+.git
+.gitignore
+README.md
+Project Step 4 Model Building and Evaluation.docx
+Phoenix Schools Dataset.csv
